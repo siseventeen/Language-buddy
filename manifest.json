@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Language Buddy",
+  "description": "Your personal vocabulary companion — look up words, get AI-powered contextual examples, watch pronunciation clips, and master vocabulary with spaced repetition flashcards.",
+  "version": "0.1.0",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "unlimitedStorage",
+    "contextMenus",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Language Buddy"
+  }
+}
