@@ -94,3 +94,9 @@ export const INTERESTS = [
   'Nature',
   'Fashion',
 ] as const
+
+export interface VideoRecommendation {
+  interest: string
+  query: string
+  label: string
+}

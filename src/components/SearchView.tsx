@@ -2,8 +2,10 @@ import { SearchBar } from './SearchBar'
 import { DefinitionCard } from './DefinitionCard'
 import { ExamplesSection } from './ExamplesSection'
 import { YouGlishPlayer } from './YouGlishPlayer'
+import { VideoRecommendations } from './VideoRecommendations'
 import { useDictionary } from '../hooks/useDictionary'
 import { useExamples } from '../hooks/useExamples'
+import { useVideoRecommendations } from '../hooks/useVideoRecommendations'
 import { useSettings } from '../hooks/useSettings'
 import { Loader2, AlertCircle } from 'lucide-react'
 
@@ -18,19 +20,34 @@ export function SearchView({ onGoToSettings }: SearchViewProps) {
   const activeKey =
     settings.aiProvider === 'gemini' ? settings.geminiApiKey : settings.openaiApiKey
 
+  const providerConfig = {
+    provider: settings.aiProvider,
+    openaiApiKey: settings.openaiApiKey,
+    openaiModel: settings.openaiModel,
+    geminiApiKey: settings.geminiApiKey,
+    geminiModel: settings.geminiModel,
+  }
+
   const { examples, loading: exLoading, error: exError, refresh } = useExamples(
     entry,
     settings.profile,
-    {
-      provider: settings.aiProvider,
-      openaiApiKey: settings.openaiApiKey,
-      openaiModel: settings.openaiModel,
-      geminiApiKey: settings.geminiApiKey,
-      geminiModel: settings.geminiModel,
-    },
+    providerConfig,
   )
 
-  const contextLabels = [...settings.profile.industries, ...settings.profile.interests]
+  const allInterests = [...settings.profile.industries, ...settings.profile.interests]
+
+  const {
+    recommendations,
+    loading: vidLoading,
+    error: vidError,
+    refresh: vidRefresh,
+  } = useVideoRecommendations(
+    entry?.word ?? null,
+    allInterests,
+    providerConfig,
+  )
+
+  const contextLabels = allInterests
   const providerLabel = settings.aiProvider === 'gemini' ? 'Gemini' : 'OpenAI'
 
   return (
@@ -65,9 +82,16 @@ export function SearchView({ onGoToSettings }: SearchViewProps) {
               onRefresh={refresh}
               onGoToSettings={onGoToSettings}
             />
-            <YouGlishPlayer
-              word={entry.word}
-              interests={contextLabels}
+            <YouGlishPlayer word={entry.word} />
+            <VideoRecommendations
+              recommendations={recommendations}
+              loading={vidLoading}
+              error={vidError}
+              hasApiKey={!!activeKey}
+              hasInterests={allInterests.length > 0}
+              providerLabel={providerLabel}
+              onRefresh={vidRefresh}
+              onGoToSettings={onGoToSettings}
             />
           </>
         )}

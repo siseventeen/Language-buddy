@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { SkipBack, SkipForward, ExternalLink, Video } from 'lucide-react'
+import { SkipBack, SkipForward, Video } from 'lucide-react'
 
 interface YouGlishPlayerProps {
   word: string
-  interests: string[]
 }
 
-export function YouGlishPlayer({ word, interests }: YouGlishPlayerProps) {
+export function YouGlishPlayer({ word }: YouGlishPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [totalResults, setTotalResults] = useState<number | null>(null)
   const [currentTrack, setCurrentTrack] = useState(0)
@@ -53,15 +52,6 @@ export function YouGlishPlayer({ word, interests }: YouGlishPlayerProps) {
   const sendCommand = useCallback((type: string) => {
     iframeRef.current?.contentWindow?.postMessage({ type }, '*')
   }, [])
-
-  // YouTube search links combining word + user interests
-  const youtubeLinks =
-    interests.length > 0
-      ? interests.slice(0, 5).map((interest) => ({
-          label: interest,
-          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(`${word} in ${interest}`)}`,
-        }))
-      : []
 
   return (
     <div className="mt-5 pt-4 border-t border-gray-100 space-y-3">
@@ -131,29 +121,6 @@ export function YouGlishPlayer({ word, interests }: YouGlishPlayerProps) {
           YouGlish.com
         </a>
       </p>
-
-      {/* Interest-based YouTube search links */}
-      {youtubeLinks.length > 0 && (
-        <div className="pt-2 border-t border-gray-50 space-y-1.5">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
-            Videos in your areas
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {youtubeLinks.map(({ label, url }) => (
-              <a
-                key={label}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-              >
-                <ExternalLink size={10} />
-                {label}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
