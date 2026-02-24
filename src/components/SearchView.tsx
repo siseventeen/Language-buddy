@@ -1,10 +1,25 @@
 import { SearchBar } from './SearchBar'
 import { DefinitionCard } from './DefinitionCard'
+import { ExamplesSection } from './ExamplesSection'
 import { useDictionary } from '../hooks/useDictionary'
+import { useExamples } from '../hooks/useExamples'
+import { useSettings } from '../hooks/useSettings'
 import { Loader2, AlertCircle } from 'lucide-react'
 
-export function SearchView() {
+interface SearchViewProps {
+  onGoToSettings: () => void
+}
+
+export function SearchView({ onGoToSettings }: SearchViewProps) {
   const { entry, loading, error, search } = useDictionary()
+  const { settings } = useSettings()
+  const { examples, loading: exLoading, error: exError, refresh } = useExamples(
+    entry,
+    settings.profile,
+    settings.openaiApiKey,
+  )
+
+  const contextLabels = [...settings.profile.industries, ...settings.profile.interests]
 
   return (
     <div className="p-4">
@@ -25,7 +40,20 @@ export function SearchView() {
           </div>
         )}
 
-        {entry && <DefinitionCard entry={entry} />}
+        {entry && (
+          <>
+            <DefinitionCard entry={entry} />
+            <ExamplesSection
+              examples={examples}
+              loading={exLoading}
+              error={exError}
+              hasApiKey={!!settings.openaiApiKey}
+              contextLabels={contextLabels}
+              onRefresh={refresh}
+              onGoToSettings={onGoToSettings}
+            />
+          </>
+        )}
       </div>
     </div>
   )

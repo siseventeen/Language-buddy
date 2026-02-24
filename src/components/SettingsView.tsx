@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { Eye, EyeOff, Check } from 'lucide-react'
 import { useSettings } from '../hooks/useSettings'
 import { INDUSTRIES, INTERESTS } from '../types'
 
@@ -39,13 +41,72 @@ function ChipGroup({
   )
 }
 
+function ApiKeyField({
+  value,
+  onSave,
+}: {
+  value: string
+  onSave: (key: string) => void
+}) {
+  const [draft, setDraft] = useState(value)
+  const [visible, setVisible] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = () => {
+    onSave(draft.trim())
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const masked = draft ? `${draft.slice(0, 7)}${'•'.repeat(Math.min(20, draft.length - 7))}` : ''
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <input
+            type={visible ? 'text' : 'password'}
+            value={draft}
+            onChange={(e) => { setDraft(e.target.value); setSaved(false) }}
+            onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+            placeholder="sk-..."
+            className="w-full text-xs px-2.5 py-1.5 pr-8 rounded border border-gray-200 focus:border-gray-400 focus:outline-none font-mono"
+          />
+          <button
+            type="button"
+            onClick={() => setVisible((v) => !v)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+          >
+            {visible ? <EyeOff size={13} /> : <Eye size={13} />}
+          </button>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={draft.trim() === value}
+          className={`
+            flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-medium transition-colors
+            ${saved
+              ? 'bg-green-50 text-green-700 border border-green-200'
+              : 'bg-gray-900 text-white disabled:opacity-40'
+            }
+          `}
+        >
+          {saved ? <><Check size={11} /> Saved</> : 'Save'}
+        </button>
+      </div>
+      {value && !visible && (
+        <p className="text-[10px] text-gray-400 font-mono">{masked}</p>
+      )}
+    </div>
+  )
+}
+
 export function SettingsView() {
-  const { settings, loading, toggleIndustry, toggleInterest } = useSettings()
+  const { settings, loading, updateSettings, toggleIndustry, toggleInterest } = useSettings()
 
   if (loading) {
-    return (
-      <div className="p-4 text-sm text-gray-400">Loading…</div>
-    )
+    return <div className="p-4 text-sm text-gray-400">Loading…</div>
   }
 
   const totalSelected =
@@ -55,12 +116,26 @@ export function SettingsView() {
     <div className="p-4 space-y-6">
       <h1 className="text-lg font-semibold text-gray-900">Settings</h1>
 
+      {/* API key */}
+      <section className="space-y-2">
+        <div>
+          <h2 className="text-sm font-semibold text-gray-800">OpenAI API key</h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Required for AI-generated example sentences. Your key is stored locally and never sent anywhere except OpenAI.
+          </p>
+        </div>
+        <ApiKeyField
+          value={settings.openaiApiKey}
+          onSave={(key) => updateSettings({ openaiApiKey: key })}
+        />
+      </section>
+
       {/* Scenario preferences */}
       <section className="space-y-4">
         <div>
           <h2 className="text-sm font-semibold text-gray-800">Example sentence context</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Select your industries and interests so AI-generated examples feel relevant to you.
+            Pick the industries and interests that matter to you — AI examples will use language from those worlds.
           </p>
         </div>
 

@@ -39,7 +39,7 @@ export function SidePanel() {
 
       {/* Content area */}
       <main className="flex-1 overflow-y-auto">
-        {activeView === 'search' && <SearchView />}
+        {activeView === 'search' && <SearchView onGoToSettings={() => setActiveView('settings')} />}
         {activeView === 'saved' && <SavedWordsView />}
         {activeView === 'settings' && <SettingsView />}
       </main>
