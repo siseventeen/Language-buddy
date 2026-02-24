@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { SkipBack, SkipForward, Video } from 'lucide-react'
+import { SkipBack, SkipForward, Video, ExternalLink } from 'lucide-react'
 
 interface YouGlishPlayerProps {
   word: string
+  interests: string[]
 }
 
-export function YouGlishPlayer({ word }: YouGlishPlayerProps) {
+export function YouGlishPlayer({ word, interests }: YouGlishPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [totalResults, setTotalResults] = useState<number | null>(null)
   const [currentTrack, setCurrentTrack] = useState(0)
@@ -52,6 +53,12 @@ export function YouGlishPlayer({ word }: YouGlishPlayerProps) {
   const sendCommand = useCallback((type: string) => {
     iframeRef.current?.contentWindow?.postMessage({ type }, '*')
   }, [])
+
+  // YouGlish links ranked by the user's selected interest areas
+  const interestClips = interests.slice(0, 6).map((interest) => ({
+    label: interest,
+    url: `https://youglish.com/pronounce/${encodeURIComponent(word)}/english`,
+  }))
 
   return (
     <div className="mt-5 pt-4 border-t border-gray-100 space-y-3">
@@ -121,6 +128,29 @@ export function YouGlishPlayer({ word }: YouGlishPlayerProps) {
           YouGlish.com
         </a>
       </p>
+
+      {/* Interest-ranked YouGlish clip links */}
+      {interestClips.length > 0 && (
+        <div className="pt-2 border-t border-gray-50 space-y-1.5">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+            Browse clips by your interests
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {interestClips.map(({ label, url }) => (
+              <a
+                key={label}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
+              >
+                <ExternalLink size={9} className="shrink-0" />
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
