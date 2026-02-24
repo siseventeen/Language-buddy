@@ -5,6 +5,7 @@ interface ExamplesSectionProps {
   loading: boolean
   error: string | null
   hasApiKey: boolean
+  providerLabel: string
   contextLabels: string[]
   onRefresh: () => void
   onGoToSettings: () => void
@@ -39,6 +40,7 @@ export function ExamplesSection({
   loading,
   error,
   hasApiKey,
+  providerLabel,
   contextLabels,
   onRefresh,
   onGoToSettings,
@@ -87,7 +89,7 @@ export function ExamplesSection({
           className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
         >
           <Settings size={13} />
-          Add an OpenAI API key in Settings to see personalised examples
+          Add a {providerLabel} API key in Settings to see personalised examples
         </button>
       )}
 

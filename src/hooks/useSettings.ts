@@ -4,8 +4,11 @@ import type { AppSettings } from '../types'
 const STORAGE_KEY = 'language_buddy_settings'
 
 const defaultSettings: AppSettings = {
+  aiProvider: 'gemini',
   openaiApiKey: '',
   openaiModel: 'gpt-4o-mini',
+  geminiApiKey: '',
+  geminiModel: 'gemini-2.0-flash',
   profile: {
     industries: [],
     interests: [],

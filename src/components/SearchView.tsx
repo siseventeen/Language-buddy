@@ -13,13 +13,24 @@ interface SearchViewProps {
 export function SearchView({ onGoToSettings }: SearchViewProps) {
   const { entry, loading, error, search } = useDictionary()
   const { settings } = useSettings()
+
+  const activeKey =
+    settings.aiProvider === 'gemini' ? settings.geminiApiKey : settings.openaiApiKey
+
   const { examples, loading: exLoading, error: exError, refresh } = useExamples(
     entry,
     settings.profile,
-    settings.openaiApiKey,
+    {
+      provider: settings.aiProvider,
+      openaiApiKey: settings.openaiApiKey,
+      openaiModel: settings.openaiModel,
+      geminiApiKey: settings.geminiApiKey,
+      geminiModel: settings.geminiModel,
+    },
   )
 
   const contextLabels = [...settings.profile.industries, ...settings.profile.interests]
+  const providerLabel = settings.aiProvider === 'gemini' ? 'Gemini' : 'OpenAI'
 
   return (
     <div className="p-4">
@@ -47,7 +58,8 @@ export function SearchView({ onGoToSettings }: SearchViewProps) {
               examples={examples}
               loading={exLoading}
               error={exError}
-              hasApiKey={!!settings.openaiApiKey}
+              hasApiKey={!!activeKey}
+              providerLabel={providerLabel}
               contextLabels={contextLabels}
               onRefresh={refresh}
               onGoToSettings={onGoToSettings}

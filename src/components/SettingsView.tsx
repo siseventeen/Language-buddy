@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Eye, EyeOff, Check } from 'lucide-react'
 import { useSettings } from '../hooks/useSettings'
 import { INDUSTRIES, INTERESTS } from '../types'
+import type { AiProvider } from '../types'
 
 function ChipGroup({
   label,
@@ -43,9 +44,11 @@ function ChipGroup({
 
 function ApiKeyField({
   value,
+  placeholder,
   onSave,
 }: {
   value: string
+  placeholder: string
   onSave: (key: string) => void
 }) {
   const [draft, setDraft] = useState(value)
@@ -69,7 +72,7 @@ function ApiKeyField({
             value={draft}
             onChange={(e) => { setDraft(e.target.value); setSaved(false) }}
             onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-            placeholder="sk-..."
+            placeholder={placeholder}
             className="w-full text-xs px-2.5 py-1.5 pr-8 rounded border border-gray-200 focus:border-gray-400 focus:outline-none font-mono"
           />
           <button
@@ -102,6 +105,11 @@ function ApiKeyField({
   )
 }
 
+const PROVIDERS: { value: AiProvider; label: string; description: string }[] = [
+  { value: 'gemini', label: 'Gemini', description: 'Free tier available' },
+  { value: 'openai', label: 'OpenAI', description: 'Requires paid key' },
+]
+
 export function SettingsView() {
   const { settings, loading, updateSettings, toggleIndustry, toggleInterest } = useSettings()
 
@@ -116,18 +124,72 @@ export function SettingsView() {
     <div className="p-4 space-y-6">
       <h1 className="text-lg font-semibold text-gray-900">Settings</h1>
 
-      {/* API key */}
-      <section className="space-y-2">
+      {/* AI provider */}
+      <section className="space-y-3">
         <div>
-          <h2 className="text-sm font-semibold text-gray-800">OpenAI API key</h2>
+          <h2 className="text-sm font-semibold text-gray-800">AI provider</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Required for AI-generated example sentences. Your key is stored locally and never sent anywhere except OpenAI.
+            Choose which model generates your example sentences.
           </p>
         </div>
-        <ApiKeyField
-          value={settings.openaiApiKey}
-          onSave={(key) => updateSettings({ openaiApiKey: key })}
-        />
+
+        {/* Provider toggle */}
+        <div className="flex gap-1.5 p-0.5 bg-gray-100 rounded-lg w-fit">
+          {PROVIDERS.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => updateSettings({ aiProvider: p.value })}
+              className={`
+                px-3 py-1.5 rounded-md text-xs font-medium transition-colors
+                ${settings.aiProvider === p.value
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+                }
+              `}
+            >
+              {p.label}
+              <span className="ml-1 text-[10px] font-normal text-gray-400">
+                {p.description}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Gemini key */}
+        {settings.aiProvider === 'gemini' && (
+          <div className="space-y-1.5">
+            <p className="text-xs text-gray-500">
+              Get a free API key at{' '}
+              <a
+                href="https://aistudio.google.com/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline hover:no-underline"
+              >
+                aistudio.google.com
+              </a>
+            </p>
+            <ApiKeyField
+              value={settings.geminiApiKey}
+              placeholder="AIza..."
+              onSave={(key) => updateSettings({ geminiApiKey: key })}
+            />
+          </div>
+        )}
+
+        {/* OpenAI key */}
+        {settings.aiProvider === 'openai' && (
+          <div className="space-y-1.5">
+            <p className="text-xs text-gray-500">
+              Your key is stored locally and never sent anywhere except OpenAI.
+            </p>
+            <ApiKeyField
+              value={settings.openaiApiKey}
+              placeholder="sk-..."
+              onSave={(key) => updateSettings({ openaiApiKey: key })}
+            />
+          </div>
+        )}
       </section>
 
       {/* Scenario preferences */}

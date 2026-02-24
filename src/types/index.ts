@@ -57,9 +57,14 @@ export interface UserProfile {
   interests: string[]
 }
 
+export type AiProvider = 'gemini' | 'openai'
+
 export interface AppSettings {
+  aiProvider: AiProvider
   openaiApiKey: string
   openaiModel: string
+  geminiApiKey: string
+  geminiModel: string
   profile: UserProfile
   onboardingComplete: boolean
 }
