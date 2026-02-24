@@ -13,6 +13,12 @@ function copyExtensionFiles(): Plugin {
         resolve(__dirname, 'manifest.json'),
         resolve(distDir, 'manifest.json'),
       )
+      // Copy YouGlish sandbox page
+      const sandboxSrc = resolve(__dirname, 'public/youglish-sandbox.html')
+      if (existsSync(sandboxSrc)) {
+        copyFileSync(sandboxSrc, resolve(distDir, 'youglish-sandbox.html'))
+      }
+
       const iconsDir = resolve(distDir, 'icons')
       if (!existsSync(iconsDir)) {
         mkdirSync(iconsDir, { recursive: true })

@@ -31,5 +31,8 @@
   },
   "action": {
     "default_title": "Language Buddy"
+  },
+  "sandbox": {
+    "pages": ["youglish-sandbox.html"]
   }
 }

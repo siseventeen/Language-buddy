@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #fff; overflow: hidden; }
+    #widget-1 { width: 100%; }
+    .msg {
+      padding: 32px 16px;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div id="widget-1"></div>
+  <div id="status" class="msg">Loading YouGlish…</div>
+
+  <script src="https://youglish.com/public/emb/widget.js"></script>
+  <script>
+    var widget = null;
+    var totalTracks = 0;
+    var curTrack = 0;
+    var views = 0;
+
+    // Called automatically by YouGlish when widget.js finishes loading
+    function onYouglishAPIReady() {
+      document.getElementById('status').textContent = 'Ready — search a word to begin';
+      window.parent.postMessage({ type: 'apiReady' }, '*');
+    }
+
+    function createWidget(word, language) {
+      if (widget) {
+        try { widget.close(); } catch (_) {}
+        widget = null;
+      }
+
+      document.getElementById('status').textContent = 'Searching…';
+      document.getElementById('status').style.display = 'block';
+
+      widget = new YG.Widget('widget-1', {
+        width: document.body.clientWidth,
+        components: 92,
+        events: {
+          onFetchDone: onFetchDone,
+          onVideoChange: onVideoChange,
+          onCaptionConsumed: onCaptionConsumed
+        }
+      });
+      widget.fetch(word, language || 'english');
+    }
+
+    function onFetchDone(event) {
+      if (event.totalResult === 0) {
+        document.getElementById('status').textContent = 'No clips found';
+        document.getElementById('status').style.display = 'block';
+      } else {
+        document.getElementById('status').style.display = 'none';
+        totalTracks = event.totalResult;
+      }
+      window.parent.postMessage({
+        type: 'fetchDone',
+        totalResults: event.totalResult
+      }, '*');
+    }
+
+    function onVideoChange(event) {
+      curTrack = event.trackNumber;
+      views = 0;
+      window.parent.postMessage({
+        type: 'videoChange',
+        trackNumber: event.trackNumber,
+        totalTracks: totalTracks
+      }, '*');
+    }
+
+    function onCaptionConsumed() {
+      views++;
+      if (views < 2) {
+        widget.replay();
+      } else if (curTrack < totalTracks) {
+        widget.next();
+      }
+    }
+
+    // Listen for commands from the side panel
+    window.addEventListener('message', function (event) {
+      var d = event.data;
+      if (!d || !d.type) return;
+
+      switch (d.type) {
+        case 'fetch':
+          createWidget(d.word, d.language);
+          break;
+        case 'next':
+          if (widget) widget.next();
+          break;
+        case 'previous':
+          if (widget) widget.previous();
+          break;
+        case 'pause':
+          if (widget) widget.pause();
+          break;
+        case 'play':
+          if (widget) widget.play();
+          break;
+      }
+    });
+  </script>
+</body>
+</html>

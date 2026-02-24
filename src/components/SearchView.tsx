@@ -1,6 +1,7 @@
 import { SearchBar } from './SearchBar'
 import { DefinitionCard } from './DefinitionCard'
 import { ExamplesSection } from './ExamplesSection'
+import { YouGlishPlayer } from './YouGlishPlayer'
 import { useDictionary } from '../hooks/useDictionary'
 import { useExamples } from '../hooks/useExamples'
 import { useSettings } from '../hooks/useSettings'
@@ -63,6 +64,10 @@ export function SearchView({ onGoToSettings }: SearchViewProps) {
               contextLabels={contextLabels}
               onRefresh={refresh}
               onGoToSettings={onGoToSettings}
+            />
+            <YouGlishPlayer
+              word={entry.word}
+              interests={contextLabels}
             />
           </>
         )}
