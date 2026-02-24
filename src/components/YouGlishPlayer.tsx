@@ -54,6 +54,23 @@ export function YouGlishPlayer({ word, interests }: YouGlishPlayerProps) {
     iframeRef.current?.contentWindow?.postMessage({ type }, '*')
   }, [])
 
+  // Empty state — no word searched yet
+  if (!word) {
+    return (
+      <div className="mt-5 pt-4 border-t border-gray-100">
+        <div className="flex items-center gap-1.5 mb-2">
+          <Video size={13} className="text-gray-400" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Hear it in context
+          </span>
+        </div>
+        <p className="text-xs text-gray-400 text-center py-6">
+          Search for a word above to hear it in real conversations
+        </p>
+      </div>
+    )
+  }
+
   // YouGlish links ranked by the user's selected interest areas
   const interestClips = interests.slice(0, 6).map((interest) => ({
     label: interest,

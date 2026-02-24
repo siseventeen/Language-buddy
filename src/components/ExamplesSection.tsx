@@ -135,6 +135,13 @@ export function ExamplesSection({
           ))}
         </ol>
       )}
+
+      {/* Empty state — no word searched yet */}
+      {!loading && !error && examples.length === 0 && hasApiKey && (
+        <p className="text-xs text-gray-400 text-center py-4">
+          Search for a word above to see personalised examples
+        </p>
+      )}
     </div>
   )
 }

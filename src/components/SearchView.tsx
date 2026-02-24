@@ -52,25 +52,22 @@ export function SearchView({ onGoToSettings }: SearchViewProps) {
           </div>
         )}
 
-        {entry && (
-          <>
-            <DefinitionCard entry={entry} />
-            <ExamplesSection
-              examples={examples}
-              loading={exLoading}
-              error={exError}
-              hasApiKey={!!activeKey}
-              providerLabel={providerLabel}
-              contextLabels={allInterests}
-              onRefresh={refresh}
-              onGoToSettings={onGoToSettings}
-            />
-            <YouGlishPlayer
-              word={entry.word}
-              interests={allInterests}
-            />
-          </>
-        )}
+        {entry && <DefinitionCard entry={entry} />}
+
+        <ExamplesSection
+          examples={examples}
+          loading={exLoading}
+          error={exError}
+          hasApiKey={!!activeKey}
+          providerLabel={providerLabel}
+          contextLabels={allInterests}
+          onRefresh={refresh}
+          onGoToSettings={onGoToSettings}
+        />
+        <YouGlishPlayer
+          word={entry?.word ?? ''}
+          interests={allInterests}
+        />
       </div>
     </div>
   )
