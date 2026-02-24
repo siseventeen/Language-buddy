@@ -15,23 +15,24 @@ export function SidePanel() {
   const [activeView, setActiveView] = useState<View>('search')
 
   return (
-    <div className="flex h-screen w-full bg-[#fafafa]">
-      {/* Icon sidebar */}
-      <nav className="flex flex-col items-center gap-1 bg-white border-r border-gray-200 py-4 px-2 w-14 shrink-0">
+    <div className="flex flex-col h-screen w-full bg-[#fafafa]">
+      {/* Horizontal top nav */}
+      <nav className="flex items-center gap-1 bg-white border-b border-gray-200 px-3 h-12 shrink-0">
         {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
           <button
             key={id}
             onClick={() => setActiveView(id)}
             title={label}
             className={`
-              flex items-center justify-center w-10 h-10 rounded-lg transition-colors
+              flex items-center gap-1.5 px-3 h-8 rounded-md text-sm font-medium transition-colors
               ${activeView === id
                 ? 'bg-gray-900 text-white'
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
               }
             `}
           >
-            <Icon size={20} />
+            <Icon size={16} />
+            <span>{label}</span>
           </button>
         ))}
       </nav>
