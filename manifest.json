@@ -10,6 +10,10 @@
     "contextMenus",
     "activeTab"
   ],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
   "background": {
     "service_worker": "service-worker.js",
     "type": "module"

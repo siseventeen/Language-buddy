@@ -1,9 +1,26 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
+import type { ReactNode } from 'react'
 import { Search, BookMarked, Settings } from 'lucide-react'
 import { SearchView } from '../components/SearchView'
 import { SavedWordsView } from '../components/SavedWordsView'
 import { SettingsView } from '../components/SettingsView'
 import type { View } from '../types'
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state = { error: null }
+  static getDerivedStateFromError(error: Error) { return { error } }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="p-4 text-xs text-red-500 space-y-1">
+          <p className="font-semibold">Something went wrong</p>
+          <p className="text-gray-400 break-all">{(this.state.error as Error).message}</p>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 const NAV_ITEMS: { id: View; icon: typeof Search; label: string }[] = [
   { id: 'search', icon: Search, label: 'Search' },
@@ -39,9 +56,11 @@ export function SidePanel() {
 
       {/* Content area */}
       <main className="flex-1 overflow-y-auto">
-        {activeView === 'search' && <SearchView onGoToSettings={() => setActiveView('settings')} />}
-        {activeView === 'saved' && <SavedWordsView />}
-        {activeView === 'settings' && <SettingsView />}
+        <ErrorBoundary>
+          {activeView === 'search' && <SearchView onGoToSettings={() => setActiveView('settings')} />}
+          {activeView === 'saved' && <SavedWordsView />}
+          {activeView === 'settings' && <SettingsView />}
+        </ErrorBoundary>
       </main>
     </div>
   )

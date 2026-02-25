@@ -23,14 +23,29 @@ export function useSettings() {
   useEffect(() => {
     chrome.storage.sync.get(STORAGE_KEY, (result) => {
       if (result[STORAGE_KEY]) {
-        setSettings({ ...defaultSettings, ...result[STORAGE_KEY] })
+        const stored = result[STORAGE_KEY] as Partial<AppSettings>
+        setSettings({
+          ...defaultSettings,
+          ...stored,
+          profile: {
+            ...defaultSettings.profile,
+            ...(stored.profile ?? {}),
+          },
+        })
       }
       setLoading(false)
     })
   }, [])
 
   const updateSettings = (patch: Partial<AppSettings>) => {
-    const updated = { ...settings, ...patch }
+    const updated: AppSettings = {
+      ...settings,
+      ...patch,
+      profile: {
+        ...settings.profile,
+        ...(patch.profile ?? {}),
+      },
+    }
     setSettings(updated)
     chrome.storage.sync.set({ [STORAGE_KEY]: updated })
   }
