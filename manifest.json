@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Language Buddy",
   "description": "Your personal vocabulary companion — look up words, get AI-powered contextual examples, watch pronunciation clips, and master vocabulary with spaced repetition flashcards.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "permissions": [
     "sidePanel",
     "storage",
